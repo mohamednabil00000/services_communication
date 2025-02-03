@@ -33,7 +33,10 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
+gem "redis-rails"
+gem "redis-namespace"
 gem "bunny", "~> 2.18"
+gem "sneakers", "~> 2.12"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"

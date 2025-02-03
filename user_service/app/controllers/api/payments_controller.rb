@@ -2,7 +2,7 @@
 
 class Api::PaymentsController < Api::BaseController
   def publish
-    Publisher.publish('payments', publish_params)
+    Publisher.publish("payments", publish_params)
     render json: { message: "send payment successfully!" }
   rescue StandardError => e
     # Log error
