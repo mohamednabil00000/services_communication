@@ -44,13 +44,17 @@ If the previous stage completed without errors, open the terminal
 ## POSTMAN SCRIPT
 
 ### POST call to user service with payment data
-- `curl --location 'http://localhost:3000/api/payments/publish' \
+```
+curl --location 'http://localhost:3000/api/payments/publish' \
     --header 'Content-Type: application/json' \
     --data '{
       "user_id": 1,
       "amount": 322,
       "currency": "usd"
-    }'`
+    }'
+```
 
 ### GET call to payment service to make sure that we get this data through rabbitmq
-- `curl --location 'http://localhost:3001/api/payments'`
+```
+`curl --location 'http://localhost:3001/api/payments'`
+```
