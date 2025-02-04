@@ -26,8 +26,8 @@ If the previous stage completed without errors, open the terminal
 
 - `docker-compose build && docker-compose up`
 
-User service is now available at `http://localhost:3000/`.
-Payment service is now available at `http://localhost:3001/`.
+- User service is now available at `http://localhost:3000/`.
+- Payment service is now available at `http://localhost:3001/`.
 
 
 </details>
