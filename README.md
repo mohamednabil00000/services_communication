@@ -1,4 +1,4 @@
-This repository contains two services user_service & payment service/
+This repository contains two services user_service & payment service.
 
 User service has a POST api to take payment data and send it through rabbitmq to payment service.
 
