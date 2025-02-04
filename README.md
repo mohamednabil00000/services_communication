@@ -56,5 +56,5 @@ curl --location 'http://localhost:3000/api/payments/publish' \
 
 ### GET call to payment service to make sure that we get this data through rabbitmq
 ```
-`curl --location 'http://localhost:3001/api/payments'`
+curl --location 'http://localhost:3001/api/payments'
 ```
