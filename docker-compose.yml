@@ -1,0 +1,129 @@
+version: "3.9"
+services:
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # --------
+  redis:
+    image: 'redis:5-alpine'
+    command: redis-server
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis:/data'
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:6379"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  pg_database:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: mnabil
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: localhost
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - ./pg_database-data:/var/lib/postgresql/data
+
+  user_service:
+    depends_on:
+      pg_database:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    build:
+      context: ./user_service/
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    ports:
+      - '3000:3000'
+    command: bundle exec rails s -p 3000 -b 0.0.0.0
+    environment:
+      - DB_USERNAME=mnabil
+      - DB_PASSWORD=postgres
+      - RAILS_ENV=development
+      - DB_PORT=5432
+      - DB_HOST=pg_database
+      - DB_DATABASE=users_development
+      - RAILS_MAX_THREADS=1
+      - WAIT_HOSTS=pg_database:5432, rabbitmq:5672
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+
+#   # -------
+
+  payment_service:
+    depends_on:
+      pg_database:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+    build:
+      context: ./payment_service/
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    ports:
+      - '3001:3001'
+    command: bundle exec rails s -p 3001 -b 0.0.0.0
+    environment:
+      DB_USERNAME: mnabil
+      DB_PASSWORD: postgres
+      RAILS_ENV: development
+      SNEAKER_HOST: sneakers
+      DB_PORT: 5432
+      DB_HOST: pg_database
+      RAILS_ENV: development
+      DB_DATABASE: payment_development
+      RAILS_MAX_THREADS: 5
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+# #   # --------
+  
+  sneakers:
+    depends_on:
+      payment_service:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+    build:
+      context: ./payment_service/
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    command: sh -c "WORKERS=PaymentsWorker bundle exec rake sneakers:run"
+    environment:
+      DB_USERNAME: mnabil
+      DB_PASSWORD: postgres
+      RAILS_ENV: development
+      SNEAKER_HOST: sneakers
+      DB_PORT: 5432
+      DB_HOST: pg_database
+      RAILS_ENV: development
+      DB_DATABASE: payment_development
+      RAILS_MAX_THREADS: 5
+      REDIS_URL: redis://redis:6379/0
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+
+
+volumes:
+  redis:
+  pgdata:

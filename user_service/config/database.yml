@@ -17,8 +17,12 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
-  url: <%= ENV.fetch('DATABASE_URL', 'postgres://mnabil:postgres@localhost') %>
+  pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 1 } %>
+  username: <%= ENV.fetch('DB_USERNAME', 'root') %>
+  password: <%= ENV.fetch('DB_PASSWORD', 'root') %>
+  port: <%= ENV.fetch('DB_PORT', 5432) %>
+  host: <%= ENV.fetch('DB_HOST', 'localhost') %>
+  # url: <%= ENV.fetch('DATABASE_URL', 'postgres://mnabil:postgres@localhost') %>
   timeout: 5000
 
 development:

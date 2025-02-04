@@ -50,6 +50,7 @@ group :development, :test do
 
   gem "rubocop", "~> 1.71", require: false
   gem "rspec-rails", "~> 7.0.0"
+  gem "dotenv"
 end
 
 group :development do

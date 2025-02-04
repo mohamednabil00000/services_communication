@@ -7,7 +7,7 @@ namespace :rabbitmq do
   task :setup do
     require "bunny"
     puts "helloe2222"
-    conn = Bunny.new.tap(&:start)
+    conn = Bunny.new(ENV.fetch("RABBITMQ_URL", "amqp://guest:guest@localhost:5672")).tap(&:start)
     ch = conn.create_channel
     queue_payments = ch.queue("consumer.payments")
     # bind queue to exchange

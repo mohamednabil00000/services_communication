@@ -11,7 +11,7 @@ class Publisher
       @channel ||= connection.create_channel
     end
     def connection
-      @connection ||= Bunny.new.tap(&:start)
+      @connection ||= Bunny.new(ENV.fetch("RABBITMQ_URL", "amqp://guest:guest@localhost:5672")).tap(&:start)
     end
   end
 end
